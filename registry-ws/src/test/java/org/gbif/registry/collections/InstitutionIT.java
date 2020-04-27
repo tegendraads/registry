@@ -90,18 +90,18 @@ public class InstitutionIT extends ExtendedCollectionEntityTest<Institution> {
     Institution institution3 = newEntity();
     UUID key3 = institutionService.create(institution3);
 
-    PagingResponse<Institution> response = institutionService.list(null, null, null, null, PAGE.apply(5, 0L));
+    PagingResponse<Institution> response = institutionService.list(null, null, null, null, null, PAGE.apply(5, 0L));
     assertEquals(3, response.getResults().size());
 
     institutionService.delete(key3);
 
-    response = institutionService.list(null, null, null, null, PAGE.apply(5, 0L));
+    response = institutionService.list(null, null, null, null, null, PAGE.apply(5, 0L));
     assertEquals(2, response.getResults().size());
 
-    response = institutionService.list(null, null, null, null, PAGE.apply(1, 0L));
+    response = institutionService.list(null, null, null, null, null, PAGE.apply(1, 0L));
     assertEquals(1, response.getResults().size());
 
-    response = institutionService.list(null, null, null, null, PAGE.apply(0, 0L));
+    response = institutionService.list(null, null, null, null, null, PAGE.apply(0, 0L));
     assertEquals(0, response.getResults().size());
   }
 
@@ -114,6 +114,7 @@ public class InstitutionIT extends ExtendedCollectionEntityTest<Institution> {
     address.setAddress("dummy address");
     address.setCity("city");
     institution1.setAddress(address);
+    institution1.setAlternativeCodes(Collections.singletonMap("alt", "test"));
     UUID key1 = institutionService.create(institution1);
 
     Institution institution2 = newEntity();
@@ -126,43 +127,48 @@ public class InstitutionIT extends ExtendedCollectionEntityTest<Institution> {
     UUID key2 = institutionService.create(institution2);
 
     Pageable page = PAGE.apply(5, 0L);
-    PagingResponse<Institution> response = institutionService.list("dummy", null, null, null, page);
+    PagingResponse<Institution> response = institutionService.list("dummy", null, null, null, null, page);
     assertEquals(2, response.getResults().size());
 
     // empty queries are ignored and return all elements
-    response = institutionService.list("", null, null, null,page);
+    response = institutionService.list("", null, null, null, null, page);
     assertEquals(2, response.getResults().size());
 
-    response = institutionService.list("city", null, null, null,page);
+    response = institutionService.list("city", null, null, null, null, page);
     assertEquals(1, response.getResults().size());
     assertEquals(key1, response.getResults().get(0).getKey());
 
-    response = institutionService.list("city2", null, null, null,page);
+    response = institutionService.list("city2", null, null, null, null, page);
     assertEquals(1, response.getResults().size());
     assertEquals(key2, response.getResults().get(0).getKey());
 
     // code and name params
-    assertEquals(1, institutionService.list(null, null, "c1", null, page).getResults().size());
-    assertEquals(1, institutionService.list(null, null, null, "n2", page).getResults().size());
-    assertEquals(1, institutionService.list(null, null, "c1", "n1", page).getResults().size());
-    assertEquals(0, institutionService.list(null, null, "c2", "n1", page).getResults().size());
+    assertEquals(1, institutionService.list(null, null, "c1", null,null, page).getResults().size());
+    assertEquals(1, institutionService.list(null, null, null, "n2",null, page).getResults().size());
+    assertEquals(1, institutionService.list(null, null, "c1", "n1",null, page).getResults().size());
+    assertEquals(0, institutionService.list(null, null, "c2", "n1",null, page).getResults().size());
+
+    // alternative code
+    assertEquals(1, institutionService.list(null, null, null, null, "alt", page).getResults().size());
+    assertEquals(0, institutionService.list(null, null, null, null, "foo", page).getResults().size());
+
 
     // query param
-    assertEquals(2, institutionService.list("c", null, null, null, page).getResults().size());
-    assertEquals(2, institutionService.list("dum add", null, null, null, page).getResults().size());
-    assertEquals(0, institutionService.list("<", null, null, null, page).getResults().size());
-    assertEquals(0, institutionService.list("\"<\"", null, null, null, page).getResults().size());
-    assertEquals(2, institutionService.list(null, null, null, null, page).getResults().size());
-    assertEquals(2, institutionService.list("  ", null, null, null, page).getResults().size());
+    assertEquals(2, institutionService.list("c", null, null, null, null, page).getResults().size());
+    assertEquals(2, institutionService.list("dum add", null, null, null, null, page).getResults().size());
+    assertEquals(0, institutionService.list("<", null, null, null, null, page).getResults().size());
+    assertEquals(0, institutionService.list("\"<\"", null, null, null, null, page).getResults().size());
+    assertEquals(2, institutionService.list(null, null, null, null, null, page).getResults().size());
+    assertEquals(2, institutionService.list("  ", null, null, null, null, page).getResults().size());
 
     // update address
     institution2 = institutionService.get(key2);
     institution2.getAddress().setCity("city3");
     institutionService.update(institution2);
-    assertEquals(1, institutionService.list("city3", null, null, null, page).getResults().size());
+    assertEquals(1, institutionService.list("city3", null, null, null, null, page).getResults().size());
 
     institutionService.delete(key2);
-    assertEquals(0, institutionService.list("city3", null, null, null, page).getResults().size());
+    assertEquals(0, institutionService.list("city3", null, null, null, null, page).getResults().size());
   }
 
   @Test
@@ -188,12 +194,12 @@ public class InstitutionIT extends ExtendedCollectionEntityTest<Institution> {
     institutionService.addContact(instutionKey1, personKey2);
     institutionService.addContact(instutionKey2, personKey2);
 
-    assertEquals(1, institutionService.list(null, personKey1, null, null,PAGE.apply(5, 0L)).getResults().size());
-    assertEquals(2, institutionService.list(null, personKey2, null, null,PAGE.apply(5, 0L)).getResults().size());
-    assertEquals(0, institutionService.list(null, UUID.randomUUID(), null, null,PAGE.apply(5, 0L)).getResults().size());
+    assertEquals(1, institutionService.list(null, personKey1, null, null, null, PAGE.apply(5, 0L)).getResults().size());
+    assertEquals(2, institutionService.list(null, personKey2, null, null, null, PAGE.apply(5, 0L)).getResults().size());
+    assertEquals(0, institutionService.list(null, UUID.randomUUID(), null, null, null, PAGE.apply(5, 0L)).getResults().size());
 
     institutionService.removeContact(instutionKey1, personKey2);
-    assertEquals(1, institutionService.list(null, personKey2, null, null,PAGE.apply(5, 0L)).getResults().size());
+    assertEquals(1, institutionService.list(null, personKey2, null, null, null, PAGE.apply(5, 0L)).getResults().size());
   }
 
   @Override

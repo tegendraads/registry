@@ -42,6 +42,7 @@ public class InstitutionWsClient extends BaseExtendedCollectionEntityClient<Inst
       @Nullable UUID contactKey,
       @Nullable String code,
       @Nullable String name,
+      @Nullable String alternativeCode,
       @Nullable Pageable pageable) {
     return get(
         PAGING_INSTITUTION,
@@ -50,6 +51,7 @@ public class InstitutionWsClient extends BaseExtendedCollectionEntityClient<Inst
             .queryParam("contact", contactKey)
             .queryParam("code", code)
             .queryParam("name", name)
+            .queryParam("alternativeCode", alternativeCode)
             .build(),
         pageable);
   }

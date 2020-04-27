@@ -73,4 +73,5 @@
   <include file="liquibase/067-pipelines-process_idx.xml" />
   <include file="liquibase/068-mol-iucn-bloodhound-swv-download-formats.xml" />
   <include file="liquibase/069-add-fragmenter-value.xml" />
+  <include file="liquibase/070-idigbio-fields.xml" />
 </databaseChangeLog>

@@ -68,11 +68,12 @@ public class InstitutionResource extends ExtendedCollectionEntityResource<Instit
                                           @Nullable @QueryParam("contact") UUID contactKey,
                                           @Nullable @QueryParam("code") String code,
                                           @Nullable @QueryParam("name") String name,
+                                          @Nullable @QueryParam("alternativeCode") String alternativeCode,
                                           @Context Pageable page) {
     page = page == null ? new PagingRequest() : page;
     query = query != null ? Strings.emptyToNull(CharMatcher.WHITESPACE.trimFrom(query)) : query;
-    long total = institutionMapper.count(query, contactKey, code, name);
-    return new PagingResponse<>(page, total, institutionMapper.list(query, contactKey, code, name, page));
+    long total = institutionMapper.count(query, contactKey, code, name, alternativeCode);
+    return new PagingResponse<>(page, total, institutionMapper.list(query, contactKey, code, name, alternativeCode, page));
   }
 
   @GET
